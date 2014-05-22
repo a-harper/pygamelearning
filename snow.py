@@ -12,6 +12,7 @@ SIZE = [500, 500]
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption("Snow Animation")
 
+
 # Create array to hold snow
 class Snow:
     def __init__(self, x_position, y_position, sway_counter, sway_direction):
