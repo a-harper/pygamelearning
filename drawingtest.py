@@ -37,13 +37,22 @@ while not done:
 
     # ALL GAME LOGIC ABOVE THIS COMMENT
 
-
     # ALL CODE TO DRAW BELOW THIS COMMENT
     # Erase the screen contents - Don't do anything before this or it'll get removed!
     screen.fill(WHITE)
 
+    #Draw text to the screen
+    #Select font size
+    font = pygame.font.Font(None, 25)
 
-    pygame.draw.rect(screen, BLACK, [20, 20, 250, 100])
+    # Render the text, "True" means anti-aliased
+    # Black is the colour
+    # This line creates an image of the letters,
+    # But does not put it on the screen yet
+    text = font.render("Test text", True, BLACK)
+
+    # This line stamps the text onto the screen at the given co-ords
+    screen.blit(text, [250, 250])
 
     # Draw changes to screen - Do all changes before this or they won't display
     pygame.display.flip()
