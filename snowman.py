@@ -9,31 +9,6 @@ GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 
 
-def draw_snowman(screen, x, y):
-    # Circle for the head
-    pygame.draw.ellipse(screen, WHITE, [35+x, 0+y, 25, 25])
-    # Draw the middle circle
-    pygame.draw.ellipse(screen, WHITE, [23+x, 20+y, 50, 50])
-    # Draw the bottom circle
-    pygame.draw.ellipse(screen, WHITE, [0+x, 65+y, 100, 100])
-
-
-def draw_stick_figure(screen, x, y):
-    # Head
-    pygame.draw.ellipse(screen, WHITE, [1+x, y, 10, 10], 0)
-
-    # Legs
-    pygame.draw.line(screen, WHITE, [5+x, 17+y], [10+x, 27+y], 2)
-    pygame.draw.line(screen, WHITE, [5+x, 17+y], [x, 27+y], 2)
-
-    # Body
-    pygame.draw.line(screen, WHITE, [5+x, 17+y], [5+x, 7+y], 2)
-
-    # Arms
-    pygame.draw.line(screen, WHITE, [5+x, 7+y], [9+x, 17+y], 2)
-    pygame.draw.line(screen, WHITE, [5+x, 7+y], [1+x, 17+y], 2)
-
-
 def main():
     """ Main function for the game. """
     pygame.init()
@@ -42,25 +17,29 @@ def main():
     size = [1024, 768]
     screen = pygame.display.set_mode(size)
 
-    pygame.display.set_caption("My Game")
+    pygame.display.set_caption("Dark Flare's Wookie Game")
 
     #Loop until the user clicks the close button.
     done = False
+
+    projectile_list = pygame.sprite.Group()
+    all_sprites_list = pygame.sprite.Group()
 
     # Used to manage how fast the screen updates
     clock = pygame.time.Clock()
     tickrate = 20
 
     # Create instance of player
-    the_player = player.Player()
+    default_sprite_image = spriteloader.sprite_sheet((15, 26), "images/player_idle.png")
+    the_player = player.Player(default_sprite_image[0])
     # Set initial position
-    the_player.x_coord = 10
-    the_player.y_coord = 10
+    the_player.rect.x = 10
+    the_player.rect.y = 10
     the_player.idle_sprites = spriteloader.sprite_sheet((15, 26), "images/player_idle.png")
     the_player.walk_sprites = spriteloader.sprite_sheet((15, 26), "images/player_walk.png")
     the_player.wash_sprites = spriteloader.sprite_sheet((15, 26), "images/player_wash-off.png")
     the_player.image = the_player.idle_sprites[0]
-
+    all_sprites_list.add(the_player)
     # Images
     background_image = pygame.image.load("images/bg.png").convert()
     frame_loop = 0
@@ -78,14 +57,20 @@ def main():
                 # Figure out if it was a relevant key
                 if event.key == pygame.K_LEFT:
                     the_player.x_speed = -3
+                    the_player.direction_r = False
                 if event.key == pygame.K_RIGHT:
                     the_player.x_speed = 3
+                    the_player.direction_r = True
                 if event.key == pygame.K_UP:
                     the_player.y_speed = -3
                 if event.key == pygame.K_DOWN:
                     the_player.y_speed = 3
                 if event.key == pygame.K_SPACE:
                     the_player.washing = True
+                if event.key == pygame.K_LCTRL:
+                    proj = the_player.fire_projectile()
+                    projectile_list.add(proj)
+                    all_sprites_list.add(proj)
 
             # Key releases
             if event.type == pygame.KEYUP:
@@ -106,7 +91,8 @@ def main():
       
         # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
         pos = pygame.mouse.get_pos()
-        the_player = player.do_updates(the_player, tickrate)
+        #the_player.update(tickrate)
+
         # ALL GAME LOGIC SHOULD GO ABOVE THIS COMMENT
 
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
@@ -114,7 +100,9 @@ def main():
         # above this, or they will be erased with this command.
         screen.fill(BLACK)
         screen.blit(background_image, [0, 0])
-        screen.blit(the_player.image, [the_player.x_coord, the_player.y_coord])
+        #screen.blit(the_player.image, [the_player.rect.x, the_player.rect.y])
+        all_sprites_list.update()
+        all_sprites_list.draw(screen)
         #draw_stick_figure(screen, x_coord, y_coord)
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
          

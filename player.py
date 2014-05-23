@@ -1,8 +1,13 @@
-class Player():
+import pygame
+import projectile
+
+
+pygame.init()
+
+
+class Player(pygame.sprite.Sprite):
     x_speed = 0
     y_speed = 0
-    x_coord = 0
-    y_coord = 0
     washing = False
     idle_sprites = ""
     walk_sprites = ""
@@ -10,39 +15,55 @@ class Player():
     image = ""
     wash_loop = 0
     frame_loop = 0
+    direction_r = True
 
+    def __init__(self, image):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = image
+        self.rect = self.image.get_rect()
 
-def do_updates(player, tick_rate):
-    player.x_coord += player.x_speed
-    player.y_coord += player.y_speed
-    if player.x_coord > 1024:
-        player.x_coord = 1024
-    if player.x_coord < 0:
-        player.x_coord = 0
-    if player.y_coord > 768:
-        player.y_coord = 768
-    if player.y_coord < 0:
-        player.y_coord = 0
-
-    if not player.washing:
-        if player.frame_loop > tick_rate / 2:
-            if player.x_speed == 0 and player.y_speed == 0:
-                player.image = player.idle_sprites[1]
-            else:
-                player.image = player.walk_sprites[1]
+    def fire_projectile(self):
+        #size = pygame.Surface(self.image.get_size())
+        proj = projectile.Projectile((0, 0, 0), 2, 2, self.rect.x, (self.rect.y + 13))
+        if self.direction_r:
+            proj.x_speed = 15
         else:
-            if player.x_speed == 0 and player.y_speed == 0:
-                player.image = player.idle_sprites[0]
+            proj.x_speed = -15
+        return proj
+
+    def update(self):
+        self.rect.x += self.x_speed
+        self.rect.y += self.y_speed
+        if self.rect.x > 1024:
+            self.rect.x = 1024
+        if self.rect.x < 0:
+            self.rect.x = 0
+        if self.rect.y > 768:
+            self.rect.y = 768
+        if self.rect.y < 0:
+            self.rect.y = 0
+
+        if not self.washing:
+            if self.frame_loop > 10:
+                if self.x_speed == 0 and self.y_speed == 0:
+                    self.image = self.idle_sprites[1]
+                else:
+                    self.image = self.walk_sprites[1]
             else:
-                player.image = player.walk_sprites[0]
-        if player.frame_loop > tick_rate:
-            player.frame_loop = 0
-        player.wash_loop = 0
-        player.frame_loop += 1
-    else:
-        if player.wash_loop < len(player.wash_sprites):
-            player.image = player.wash_sprites[player.wash_loop]
-            player.wash_loop += 1
+                if self.x_speed == 0 and self.y_speed == 0:
+                    self.image = self.idle_sprites[0]
+                else:
+                    self.image = self.walk_sprites[0]
+            if not self.direction_r:
+                self.image = pygame.transform.flip(self.image, True, False)
+            if self.frame_loop > 20:
+                self.frame_loop = 0
+            self.wash_loop = 0
+            self.frame_loop += 1
         else:
-            player.image = player.wash_sprites[len(player.wash_sprites) - 1]
-    return player
+            if self.wash_loop < len(self.wash_sprites):
+                self.image = self.wash_sprites[self.wash_loop]
+                self.wash_loop += 1
+            else:
+                self.image = self.wash_sprites[len(self.wash_sprites) - 1]
+        return self
