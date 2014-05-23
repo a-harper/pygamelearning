@@ -1,5 +1,6 @@
 import pygame
 import spriteloader
+import player
 
 # Define some colors as global constants
 BLACK = (0, 0, 0)
@@ -50,27 +51,18 @@ def main():
     clock = pygame.time.Clock()
     tickrate = 20
 
-    # Speed (pixels per frame)
-    x_speed = 0
-    y_speed = 0
-
-    # Initial position
-    x_coord = 10
-    y_coord = 10
-
-    # Player washing?
-    player_washing = False
-
+    # Create instance of player
+    the_player = player.Player()
+    # Set initial position
+    the_player.x_coord = 10
+    the_player.y_coord = 10
+    the_player.idle_sprites = spriteloader.sprite_sheet((15, 26), "images/player_idle.png")
+    the_player.walk_sprites = spriteloader.sprite_sheet((15, 26), "images/player_walk.png")
+    the_player.wash_sprites = spriteloader.sprite_sheet((15, 26), "images/player_wash-off.png")
+    the_player.image = the_player.idle_sprites[0]
 
     # Images
     background_image = pygame.image.load("images/bg.png").convert()
-    player_idle_sprites = spriteloader.sprite_sheet((15, 26), "images/player_idle.png")
-    player_walk_sprites = spriteloader.sprite_sheet((15, 26), "images/player_walk.png")
-    player_wash_sprites = spriteloader.sprite_sheet((15, 26), "images/player_wash-off.png")
-    player_idle1 = pygame.image.load("images/player_idle1.png").convert()
-    player_idle2 = pygame.image.load("images/player_idle2.png").convert()
-    player_idle1.set_colorkey(BLACK)
-    player_idle2.set_colorkey(BLACK)
     frame_loop = 0
     wash_loop = 0
 
@@ -85,68 +77,36 @@ def main():
             if event.type == pygame.KEYDOWN:
                 # Figure out if it was a relevant key
                 if event.key == pygame.K_LEFT:
-                    x_speed = -3
+                    the_player.x_speed = -3
                 if event.key == pygame.K_RIGHT:
-                    x_speed = 3
+                    the_player.x_speed = 3
                 if event.key == pygame.K_UP:
-                    y_speed = -3
+                    the_player.y_speed = -3
                 if event.key == pygame.K_DOWN:
-                    y_speed = 3
+                    the_player.y_speed = 3
                 if event.key == pygame.K_SPACE:
-                    player_washing = True
+                    the_player.washing = True
 
             # Key releases
             if event.type == pygame.KEYUP:
                 # Figure out if it was a relevant key
                 if event.key == pygame.K_LEFT:
-                    x_speed = 0
+                    the_player.x_speed = 0
                 if event.key == pygame.K_RIGHT:
-                    x_speed = 0
+                    the_player.x_speed = 0
                 if event.key == pygame.K_UP:
-                    y_speed = 0
+                    the_player.y_speed = 0
                 if event.key == pygame.K_DOWN:
-                    y_speed = 0
+                    the_player.y_speed = 0
                 if event.key == pygame.K_SPACE:
-                    player_washing = False
+                    the_player.washing = False
 
         # ALL EVENT PROCESSING SHOULD GO ABOVE THIS COMMENT
       
       
         # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
         pos = pygame.mouse.get_pos()
-        x_coord += x_speed
-        y_coord += y_speed
-        if x_coord > 1024:
-            x_coord = 1024
-        if x_coord < 0:
-            x_coord = 0
-        if y_coord > 768:
-            y_coord = 768
-        if y_coord < 0:
-            y_coord = 0
-
-        if not player_washing:
-            if frame_loop > tickrate / 2:
-                if x_speed == 0 and y_speed == 0:
-                    player_image = player_idle_sprites[1]
-                else:
-                    player_image = player_walk_sprites[1]
-            else:
-                if x_speed == 0 and y_speed == 0:
-                    player_image = player_idle_sprites[0]
-                else:
-                    player_image = player_walk_sprites[0]
-            if frame_loop > tickrate:
-                frame_loop = 0
-            frame_loop += 1
-            wash_loop = 0
-        else:
-            if wash_loop < len(player_wash_sprites):
-                player_image = player_wash_sprites[wash_loop]
-                wash_loop += 1
-            else:
-                player_image = player_wash_sprites[len(player_wash_sprites) - 1]
-
+        the_player = player.do_updates(the_player, frame_loop)
         # ALL GAME LOGIC SHOULD GO ABOVE THIS COMMENT
 
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
@@ -154,7 +114,7 @@ def main():
         # above this, or they will be erased with this command.
         screen.fill(BLACK)
         screen.blit(background_image, [0, 0])
-        screen.blit(player_image, [x_coord, y_coord])
+        screen.blit(the_player.image, [the_player.x_coord, the_player.y_coord])
         #draw_stick_figure(screen, x_coord, y_coord)
         # ALL CODE TO DRAW SHOULD GO ABOVE THIS COMMENT
          
