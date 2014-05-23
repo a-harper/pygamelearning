@@ -1,5 +1,6 @@
 import pygame
 import random
+import math
 
 pygame.init()
 
@@ -46,18 +47,21 @@ while not done:
         snowflake.y_pos += 1
 
         # Let's add a sway
-        if (random.randrange(0, 2) == 1 and snowflake.sway_counter == 0) or snowflake.sway_counter > 25:
-            snowflake.sway_direction *= -1
-            snowflake.sway_counter = 0
+        #if random.randrange(0, 2) == 1 and snowflake.sway_counter == 0:
+            #snowflake.sway_direction *= -1
+            #snowflake.sway_counter = 0
 
-        sway_amount = random.randrange(0, 3)
-        snowflake.x_pos += sway_amount * snowflake.sway_direction
-        snowflake.sway_counter += 1
+        sway_amount = random.randrange(0, 4)
+        snowflake.x_pos += int(-1 * math.cos(snowflake.sway_counter * 4) * sway_amount)
+        snowflake.sway_counter += 0.008
+        snowflake.sway_counter %= 2 * math.pi
 
         # If the snowflake falls off the screen we should reset it just above the top
         if snowflake.y_pos > 500 or snowflake.x_pos > 500 or snowflake.x_pos < 0:
             y = random.randrange(-50, -10)
             snowflake.y_pos = y
+            snowflake.sway_counter = 0
+
             # Give it a new x position too
             snowflake.x_pos = random.randrange(0, 500)
 
