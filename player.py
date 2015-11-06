@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
 
     def fire_projectile(self):
-        #size = pygame.Surface(self.image.get_size())
+        # size = pygame.Surface(self.image.get_size())
         proj = projectile.Projectile((0, 0, 0), 2, 2, self.rect.x, (self.rect.y + 13))
         if self.direction_r:
             proj.x_speed = 15
@@ -44,7 +44,7 @@ class Player(pygame.sprite.Sprite):
             self.rect.y = 0
 
         if not self.washing:
-            if self.frame_loop > 10:
+            if self.frame_loop > 5:
                 if self.x_speed == 0 and self.y_speed == 0:
                     self.image = self.idle_sprites[1]
                 else:
@@ -56,7 +56,7 @@ class Player(pygame.sprite.Sprite):
                     self.image = self.walk_sprites[0]
             if not self.direction_r:
                 self.image = pygame.transform.flip(self.image, True, False)
-            if self.frame_loop > 20:
+            if self.frame_loop > 10:
                 self.frame_loop = 0
             self.wash_loop = 0
             self.frame_loop += 1

@@ -91,8 +91,6 @@ def main():
       
         # ALL GAME LOGIC SHOULD GO BELOW THIS COMMENT
         pos = pygame.mouse.get_pos()
-        #the_player.update(tickrate)
-
         # ALL GAME LOGIC SHOULD GO ABOVE THIS COMMENT
 
         # ALL CODE TO DRAW SHOULD GO BELOW THIS COMMENT
